@@ -2,14 +2,18 @@ package ro.uvt.info.proiect_sdm_culicov;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import ro.uvt.info.proiect_sdm_culicov.Author;
-import ro.uvt.info.proiect_sdm_culicov.Book;
-import ro.uvt.info.proiect_sdm_culicov.Image;
-import ro.uvt.info.proiect_sdm_culicov.Paragraph;
-import ro.uvt.info.proiect_sdm_culicov.Section;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import ro.uvt.difexamples.ClientComponent;
+import ro.uvt.difexamples.SingletonComponent;
+import ro.uvt.difexamples.TransientComponent;
 
+@SpringBootApplication
+@ComponentScan({"ro.uvt.info.proiect_sdm_culicov", "ro.uvt.difexamples", "ro.uvt.controllers"})
 public class ProiectSdmCulicovApplication {
     public static void main(String[] args) {
+        ApplicationContext context = SpringApplication.run(ProiectSdmCulicovApplication.class, args);
+
         // Логика первого лабораторного
         Book noapteBuna = new Book("Noapte buna, copii!");
         Author rpGheo = new Author("Radu Pavel", "Gheo");
@@ -41,5 +45,26 @@ public class ProiectSdmCulicovApplication {
         p1.print();
         p2.print();
         p3.print();
+
+        // Логика третьего лабораторного: Dependency Injection
+        System.out.println("\nDependency Injection Demonstration:");
+
+        // Работа с TransientComponent
+        TransientComponent transientBean1 = context.getBean(TransientComponent.class);
+        transientBean1.operation();
+
+        TransientComponent transientBean2 = context.getBean(TransientComponent.class);
+        transientBean2.operation();
+
+        // Работа с SingletonComponent
+        SingletonComponent singletonBean1 = context.getBean(SingletonComponent.class);
+        singletonBean1.operation();
+
+        SingletonComponent singletonBean2 = context.getBean(SingletonComponent.class);
+        singletonBean2.operation();
+
+        // Работа с ClientComponent
+        ClientComponent clientBean = context.getBean(ClientComponent.class);
+        clientBean.operation();
     }
 }
