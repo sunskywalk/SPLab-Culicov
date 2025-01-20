@@ -4,12 +4,19 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+import ro.uvt.commands.AddParagraphCommand;
+import ro.uvt.commands.CreateSectionCommand;
 import ro.uvt.difexamples.ClientComponent;
 import ro.uvt.difexamples.SingletonComponent;
 import ro.uvt.difexamples.TransientComponent;
+import ro.uvt.executors.CommandExecutor;
+import ro.uvt.handlers.AddParagraphHandler;
+import ro.uvt.handlers.CreateSectionHandler;
+import ro.uvt.handlers.DefaultHandler;
+import ro.uvt.handlers.Handler;
 
 @SpringBootApplication
-@ComponentScan({"ro.uvt.info.proiect_sdm_culicov", "ro.uvt.difexamples", "ro.uvt.controllers"})
+@ComponentScan({"ro.uvt.info.proiect_sdm_culicov", "ro.uvt.difexamples", "ro.uvt.controllers", "ro.uvt.commands", "ro.uvt.executors", "ro.uvt.filters", "ro.uvt.services", "ro.uvt.handlers"})
 public class ProiectSdmCulicovApplication {
     public static void main(String[] args) {
         ApplicationContext context = SpringApplication.run(ProiectSdmCulicovApplication.class, args);
@@ -66,5 +73,35 @@ public class ProiectSdmCulicovApplication {
         // Работа с ClientComponent
         ClientComponent clientBean = context.getBean(ClientComponent.class);
         clientBean.operation();
+
+        // Логика четвёртого лабораторного: Command Pattern
+        System.out.println("\nCommand Pattern Demonstration:");
+        CommandExecutor commandExecutor = context.getBean(CommandExecutor.class);
+        CreateSectionCommand createSectionCommand = context.getBean(CreateSectionCommand.class);
+        AddParagraphCommand addParagraphCommand = context.getBean(AddParagraphCommand.class);
+
+        // Асинхронное выполнение
+        commandExecutor.executeAsync(createSectionCommand);
+        commandExecutor.executeAsync(addParagraphCommand);
+
+        // Синхронное выполнение
+        String result1 = commandExecutor.executeSync(createSectionCommand);
+        String result2 = commandExecutor.executeSync(addParagraphCommand);
+
+        System.out.println(result1);
+        System.out.println(result2);
+
+        // Логика четвёртого лабораторного: Chain of Responsibility
+        System.out.println("\nChain of Responsibility Demonstration:");
+        Handler createSectionHandler = new CreateSectionHandler();
+        Handler addParagraphHandler = new AddParagraphHandler();
+        Handler defaultHandler = new DefaultHandler();
+
+        createSectionHandler.setNext(addParagraphHandler);
+        addParagraphHandler.setNext(defaultHandler);
+
+        createSectionHandler.handleRequest("CreateSection");
+        createSectionHandler.handleRequest("AddParagraph");
+        createSectionHandler.handleRequest("UnknownCommand");
     }
 }
