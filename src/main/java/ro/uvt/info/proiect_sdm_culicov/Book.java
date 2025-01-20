@@ -16,19 +16,8 @@ public class Book implements Element {
         authors.add(author);
     }
 
-    @Override
-    public void add(Element element) {
+    public void addContent(Element element) {
         content.add(element);
-    }
-
-    @Override
-    public void remove(Element element) {
-        content.remove(element);
-    }
-
-    @Override
-    public Element get(int index) {
-        return content.get(index);
     }
 
     @Override
