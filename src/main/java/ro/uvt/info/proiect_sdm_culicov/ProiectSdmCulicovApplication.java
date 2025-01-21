@@ -4,6 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import ro.uvt.commands.AddParagraphCommand;
 import ro.uvt.commands.CreateSectionCommand;
 import ro.uvt.difexamples.ClientComponent;
@@ -14,28 +16,48 @@ import ro.uvt.handlers.AddParagraphHandler;
 import ro.uvt.handlers.CreateSectionHandler;
 import ro.uvt.handlers.DefaultHandler;
 import ro.uvt.handlers.Handler;
+import ro.uvt.models.*;
+import ro.uvt.repositories.BookRepository;
+import ro.uvt.repositories.AuthorRepository;
+import ro.uvt.strategies.AlignCenter;
+import ro.uvt.strategies.AlignLeft;
+import ro.uvt.strategies.AlignRight;
 
 @SpringBootApplication
-@ComponentScan({"ro.uvt.info.proiect_sdm_culicov", "ro.uvt.difexamples", "ro.uvt.controllers", "ro.uvt.commands", "ro.uvt.executors", "ro.uvt.filters", "ro.uvt.services", "ro.uvt.handlers"})
+@EntityScan(basePackages = "ro.uvt.models")
+@EnableJpaRepositories(basePackages = "ro.uvt.repositories")
+@ComponentScan({"ro.uvt.info.proiect_sdm_culicov", "ro.uvt.difexamples", "ro.uvt.controllers", "ro.uvt.commands", "ro.uvt.executors", "ro.uvt.filters", "ro.uvt.services", "ro.uvt.handlers", "ro.uvt.repositories"})
 public class ProiectSdmCulicovApplication {
     public static void main(String[] args) {
         ApplicationContext context = SpringApplication.run(ProiectSdmCulicovApplication.class, args);
+
+        // Получение репозиториев
+        BookRepository bookRepository = context.getBean(BookRepository.class);
+        AuthorRepository authorRepository = context.getBean(AuthorRepository.class);
 
         // Логика первого лабораторного
         Book noapteBuna = new Book("Noapte buna, copii!");
         Author rpGheo = new Author("Radu Pavel", "Gheo");
         noapteBuna.addAuthor(rpGheo);
+
         Section cap1 = new Section("Capitolul 1");
         Section cap11 = new Section("Capitolul 1.1");
         Section cap111 = new Section("Subchapter 1.1.1");
 
         noapteBuna.addContent(new Paragraph("Multumesc celor care ..."));
         noapteBuna.addContent(cap1);
+
         cap1.add(new Paragraph("Moto capitol"));
         cap1.add(cap11);
+
         cap11.add(new Paragraph("Text from subchapter 1.1"));
         cap11.add(cap111);
+
         cap111.add(new Image("Image subchapter 1.1.1.1"));
+
+        // Сохранение книги и автора в базу данных
+        authorRepository.save(rpGheo);
+        bookRepository.save(noapteBuna);
 
         noapteBuna.print();
 

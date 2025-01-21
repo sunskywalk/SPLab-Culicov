@@ -1,4 +1,4 @@
-package ro.uvt.info.proiect_sdm_culicov;
+package ro.uvt.strategies;
 
 public class AlignLeft implements AlignStrategy {
     @Override

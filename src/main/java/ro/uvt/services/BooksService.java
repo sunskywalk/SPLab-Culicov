@@ -1,36 +1,47 @@
 package ro.uvt.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ro.uvt.models.Book;
+import ro.uvt.repositories.BookRepository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class BooksService {
-    private final Map<String, String> books = new HashMap<>();
+    @Autowired
+    private BookRepository booksRepository;
 
-    public List<String> getAllBooks() {
-        return new ArrayList<>(books.values());
+    // Получить все книги
+    public List<Book> getAllBooks() {
+        return booksRepository.findAll(); // Используем метод из JpaRepository
     }
 
-    public String getBookById(String id) {
-        return books.getOrDefault(id, "Book not found");
+    // Получить книгу по ID
+    public Book getBookById(Long id) {
+        return booksRepository.findById(id).orElse(null);
     }
 
-    public String createBook(String id, String details) {
-        books.put(id, details);
-        return "Book created with id: " + id;
+    // Создать книгу
+    public Book createBook(Book book) {
+        return booksRepository.save(book); // Сохраняем книгу в базу данных
     }
 
-    public String updateBook(String id, String details) {
-        books.put(id, details);
-        return "Book updated with id: " + id;
+    // Обновить книгу
+    public Book updateBook(Long id, Book bookDetails) {
+        Book book = booksRepository.findById(id).orElse(null);
+        if (book != null) {
+            book.setTitle(bookDetails.getTitle());
+            book.setContent(bookDetails.getContent());
+            book.setAuthors(bookDetails.getAuthors());
+            return booksRepository.save(book);
+        }
+        return null; // Или можно вернуть исключение
     }
 
-    public String deleteBook(String id) {
-        books.remove(id);
+    // Удалить книгу
+    public String deleteBook(Long id) {
+        booksRepository.deleteById(id);
         return "Book deleted with id: " + id;
     }
 }

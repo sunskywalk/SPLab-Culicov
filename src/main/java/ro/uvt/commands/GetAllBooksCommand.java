@@ -1,16 +1,24 @@
 package ro.uvt.commands;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import ro.uvt.models.Book;
 import ro.uvt.services.BooksService;
 
-public class GetAllBooksCommand implements Command {
+import java.util.stream.Collectors;
+
+@Component
+public class GetAllBooksCommand {
     private final BooksService booksService;
 
+    @Autowired
     public GetAllBooksCommand(BooksService booksService) {
         this.booksService = booksService;
     }
 
-    @Override
     public String execute() {
-        return String.join(", ", booksService.getAllBooks());
+        return booksService.getAllBooks().stream()
+                .map(Book::getTitle)
+                .collect(Collectors.joining(", "));
     }
 }
