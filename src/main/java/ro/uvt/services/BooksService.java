@@ -2,8 +2,10 @@ package ro.uvt.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ro.uvt.models.Author;
 import ro.uvt.models.Book;
 import ro.uvt.repositories.BookRepository;
+import ro.uvt.requests.NewBookRequest;
 
 import java.util.List;
 
@@ -22,9 +24,17 @@ public class BooksService {
         return booksRepository.findById(id).orElse(null);
     }
 
-    // Создать книгу
+    // Создать книгу (через NewBookRequest)
+    public Book createBook(NewBookRequest newBookRequest) {
+        Author author = new Author(newBookRequest.getAuthor(), "");
+        Book book = new Book(newBookRequest.getTitle());
+        // Здесь можно добавить дополнительные данные, например авторов, если нужно
+        return booksRepository.save(book);
+    }
+
+    // Создать книгу (через объект Book)
     public Book createBook(Book book) {
-        return booksRepository.save(book); // Сохраняем книгу в базу данных
+        return booksRepository.save(book);
     }
 
     // Обновить книгу
@@ -41,7 +51,11 @@ public class BooksService {
 
     // Удалить книгу
     public String deleteBook(Long id) {
-        booksRepository.deleteById(id);
-        return "Book deleted with id: " + id;
+        if (booksRepository.existsById(id)) {
+            booksRepository.deleteById(id);
+            return "Book deleted with id: " + id;
+        } else {
+            return "Book with id " + id + " not found.";
+        }
     }
 }

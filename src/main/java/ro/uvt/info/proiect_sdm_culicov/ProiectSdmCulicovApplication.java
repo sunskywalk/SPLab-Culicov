@@ -3,9 +3,12 @@ package ro.uvt.info.proiect_sdm_culicov;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import ro.uvt.commands.AddParagraphCommand;
 import ro.uvt.commands.CreateSectionCommand;
 import ro.uvt.difexamples.ClientComponent;
@@ -26,7 +29,7 @@ import ro.uvt.strategies.AlignRight;
 @SpringBootApplication
 @EntityScan(basePackages = "ro.uvt.models")
 @EnableJpaRepositories(basePackages = "ro.uvt.repositories")
-@ComponentScan({"ro.uvt.info.proiect_sdm_culicov", "ro.uvt.difexamples", "ro.uvt.controllers", "ro.uvt.commands", "ro.uvt.executors", "ro.uvt.filters", "ro.uvt.services", "ro.uvt.handlers", "ro.uvt.repositories"})
+@ComponentScan({"ro.uvt.info.proiect_sdm_culicov", "ro.uvt.difexamples", "ro.uvt.controllers", "ro.uvt.commands", "ro.uvt.executors", "ro.uvt.filters", "ro.uvt.services", "ro.uvt.handlers", "ro.uvt.repositories", "ro.uvt.requests", "ro.uvt.subjects","ro.uvt.observers" })
 public class ProiectSdmCulicovApplication {
     public static void main(String[] args) {
         ApplicationContext context = SpringApplication.run(ProiectSdmCulicovApplication.class, args);
@@ -125,5 +128,14 @@ public class ProiectSdmCulicovApplication {
         createSectionHandler.handleRequest("CreateSection");
         createSectionHandler.handleRequest("AddParagraph");
         createSectionHandler.handleRequest("UnknownCommand");
+    }
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**").allowedOrigins("*");
+            }
+        };
     }
 }
